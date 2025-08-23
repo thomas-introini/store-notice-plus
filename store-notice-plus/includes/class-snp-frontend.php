@@ -11,16 +11,26 @@ class SNP_Frontend {
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
 
-		// Render in a layout-safe hook (never overlaps header).
-		if ( function_exists( 'wp_body_open' ) ) {
-			add_action( 'wp_body_open', array( $this, 'render' ), 1 );
+		$hook = $this->get_render_hook();
+		if ( 'wp_footer' === $hook ) {
+			add_action( 'wp_footer', array( $this, 'render' ), 1 );
 		} else {
-			// Fallback: render before main content via get_header (very old themes).
-			add_action( 'get_header', array( $this, 'render' ), 1 );
+			// 'header' or 'wp_body_open' → render early, then JS can move into header if needed
+			if ( function_exists( 'wp_body_open' ) ) {
+				add_action( 'wp_body_open', array( $this, 'render' ), 1 );
+			} else {
+				add_action( 'get_header', array( $this, 'render' ), 1 ); // legacy fallback
+			}
 		}
 
-		// Optionally hide WooCommerce default demo notice if requested.
 		add_action( 'wp_head', array( $this, 'maybe_hide_wc_notice' ), 99 );
+	}
+
+	protected function get_render_hook() {
+		$opts = wp_parse_args( (array) get_option( 'snp_options' ), snp_default_options() );
+		if ( 'wp_footer' === $opts['render_hook'] ) return 'wp_footer';
+		if ( 'header' === $opts['render_hook'] ) return 'header';
+		return 'wp_body_open';
 	}
 
 	/**
@@ -77,13 +87,18 @@ class SNP_Frontend {
 			true
 		);
 
-		// (localize as you already do)
+		$render_hook = $this->get_render_hook();
+		$js_position = ( 'wp_footer' === $render_hook ) ? 'bottom' : 'top';
+		$js_sticky   = ( 'header' === $render_hook || 'wp_footer' === $render_hook ) ? 0 : (int) ! empty( $opts['sticky'] );
+
 		wp_localize_script( 'snp-frontend', 'SNP_DATA', array(
-			'interval'     => max( 2, min( 60, (int) $opts['interval'] ) ),
-			'dismissDays'  => max( 1, min( 365, (int) $opts['dismiss_days'] ) ),
-			'position'     => ( $opts['position'] === 'bottom' ? 'bottom' : 'top' ),
-			'sticky'       => (int) ! empty( $opts['sticky'] ),
-			'strings'      => array(
+			'interval'       => max( 2, min( 60, (int) $opts['interval'] ) ),
+			'dismissDays'    => max( 1, min( 365, (int) $opts['dismiss_days'] ) ),
+			'position'       => $js_position,
+			'sticky'         => $js_sticky,
+			'renderHook'     => $render_hook,                   // 'header' | 'wp_body_open' | 'wp_footer'
+			'headerSelector' => (string) $opts['header_selector'],
+			'strings'        => array(
 				'close'     => __( 'Close notice', 'store-notice-plus' ),
 				'announce'  => __( 'Store notice', 'store-notice-plus' ),
 			),
@@ -112,8 +127,20 @@ class SNP_Frontend {
 			'span'  => array( 'class' => array(), 'style' => array() ),
 		);
 
-		$pos_class    = ( $opts['position'] === 'bottom' ) ? 'snp--pos-bottom' : 'snp--pos-top';
-		$sticky_class = ( ! empty( $opts['sticky'] ) && $opts['position'] === 'top' ) ? 'snp--sticky' : '';
+		$render_hook = $this->get_render_hook();
+
+		if ( 'wp_footer' === $render_hook ) {
+			$pos_class    = 'snp--pos-bottom';
+			$sticky_class = '';
+		} elseif ( 'header' === $render_hook ) {
+			// Inside header: top, non-sticky (let the theme header manage stickiness)
+			$pos_class    = 'snp--pos-top';
+			$sticky_class = '';
+		} else {
+			$pos_class    = 'snp--pos-top';
+			$sticky_class = ( ! empty( $opts['sticky'] ) && $pos_class === 'snp--pos-top' ) ? 'snp--sticky' : '';
+		}
+
 
 		?>
 		<div id="snp-banner" class="snp-banner <?php echo esc_attr( $pos_class . ' ' . $sticky_class ); ?>" role="region" aria-label="<?php esc_attr_e( 'Store notice', 'store-notice-plus' ); ?>">

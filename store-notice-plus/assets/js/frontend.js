@@ -5,6 +5,27 @@
   var banner = document.getElementById('snp-banner');
   if (!banner) return;
 
+  // --- Optional relocation into header ---
+  if (SNP_DATA && SNP_DATA.renderHook === 'header') {
+    var selector = (SNP_DATA.headerSelector || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var target = null;
+
+    for (var i = 0; i < selector.length; i++) {
+      var t = document.querySelector(selector[i]);
+      if (t) { target = t; break; }
+    }
+
+    if (target) {
+      // Prepend inside header so it appears at the very top of the header block
+      if (target.firstChild) {
+        target.insertBefore(banner, target.firstChild);
+      } else {
+        target.appendChild(banner);
+      }
+    } // else: no match → gracefully keep it at body open
+  }
+
+
   var closeBtn = banner.querySelector('.snp-close');
   var wrap = banner.querySelector('.snp-messages');
   if (!wrap) return;

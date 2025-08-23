@@ -48,7 +48,13 @@ class SNP_Admin {
 			array( 'messages', 'textarea', __( 'Messages (one per line)', 'store-notice-plus' ) ),
 			array( 'interval', 'number', __( 'Rotation interval (seconds)', 'store-notice-plus' ) ),
 			array( 'dismiss_days', 'number', __( 'Dismiss duration (days)', 'store-notice-plus' ) ),
-			array( 'position', 'select', __( 'Position', 'store-notice-plus' ), array( 'top' => __( 'Top', 'store-notice-plus' ), 'bottom' => __( 'Bottom', 'store-notice-plus' ) ) ),
+			array( 'render_hook', 'select', __( 'Insert banner at', 'store-notice-plus' ),
+			array(
+				'header'       => __( 'Inside header (via selector)', 'store-notice-plus' ),
+				'wp_body_open' => __( 'Top (right after <body>)', 'store-notice-plus' ),
+				'wp_footer'    => __( 'Footer (before </body>)', 'store-notice-plus' ),
+			) ),
+			array( 'header_selector', 'text', __( 'Header CSS selector', 'store-notice-plus' ) ),
 			array( 'sticky', 'checkbox', __( 'Stick on scroll (top only)', 'store-notice-plus' ) ),
 			array( 'bg_color', 'color', __( 'Background color', 'store-notice-plus' ) ),
 			array( 'text_color', 'color', __( 'Text color', 'store-notice-plus' ) ),
@@ -93,9 +99,14 @@ class SNP_Admin {
 		$dismiss_days        = isset( $input['dismiss_days'] ) ? absint( $input['dismiss_days'] ) : $defaults['dismiss_days'];
 		$out['dismiss_days'] = max( 1, min( 365, $dismiss_days ) );
 
-		// Position enum.
-		$pos = isset( $input['position'] ) ? sanitize_text_field( $input['position'] ) : 'top';
-		$out['position'] = in_array( $pos, array( 'top', 'bottom' ), true ) ? $pos : 'top';
+		// Render hook.
+		$hook = isset( $input['render_hook'] ) ? sanitize_text_field( $input['render_hook'] ) : 'header';
+		$out['render_hook'] = in_array( $hook, array( 'header', 'wp_body_open', 'wp_footer' ), true ) ? $hook : 'header';
+
+		$sel = isset( $input['header_selector'] ) ? (string) $input['header_selector'] : '';
+		$sel = trim( wp_kses( $sel, array() ) ); // plain text, no HTML
+		$out['header_selector'] = $sel ? $sel : snp_default_options()['header_selector'];
+
 
 		// Colors.
 		foreach ( array( 'bg_color', 'text_color', 'link_color', 'close_color', 'close_color_hover' ) as $key ) {
@@ -184,6 +195,19 @@ class SNP_Admin {
 				}
 				echo '</select>';
 				break;
+			case 'text':
+				printf(
+					'<input type="text" name="snp_options[%1$s]" value="%2$s" class="regular-text" />',
+					esc_attr( $key ),
+					esc_attr( $val )
+				);
+				if ( 'header_selector' === $key ) {
+					echo '<p class="description">' .
+							esc_html__( 'Comma-separated selectors. First matching element will be used (e.g. header, .site-header).', 'store-notice-plus' ) .
+							'</p>';
+				}
+				break;
+
 		}
 	}
 

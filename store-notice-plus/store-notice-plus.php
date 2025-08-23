@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Store Notice Plus
  * Description: A customizable, rotating, dismissible store notice banner with color controls. Safe layout (no header overlap) and mobile-friendly.
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      Thomas Introini
  * License:     GPL-2.0-or-later
  * Text Domain: store-notice-plus
@@ -33,7 +33,8 @@ function snp_default_options() {
 		'messages'         => "Spedizione gratuita oltre 39€\nIscriviti alla newsletter per il 10% di sconto\nScopri i nostri abbonamenti <a href=\"/abbonamenti\">qui</a>",
 		'interval'         => 6,          // seconds
 		'dismiss_days'     => 7,          // cookie lifetime
-		'position'         => 'top',      // 'top' or 'bottom'
+		'render_hook'      => 'header', // 'header' | 'wp_body_open' | 'wp_footer'
+		'header_selector'  => 'header, .site-header, #site-header, #masthead, .main-header',
 		'sticky'           => 1,          // sticky on scroll
 		'bg_color'         => '#111111',
 		'text_color'       => '#ffffff',
