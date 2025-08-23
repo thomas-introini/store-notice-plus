@@ -1,0 +1,97 @@
+# ----------------------------
+# OS cruft
+# ----------------------------
+.DS_Store
+Thumbs.db
+Icon?
+ehthumbs.db
+
+# ----------------------------
+# Editors / IDEs
+# ----------------------------
+.vscode/
+.idea/
+*.iml
+*.sublime-*
+*.code-workspace
+
+# Vim/Emacs swap/backup files
+*~
+*.swp
+*.swo
+# JetBrains
+*.iws
+# VSCode state
+.history/
+.project/
+
+# ----------------------------
+# Node / Frontend tooling (if used)
+# ----------------------------
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnp.*
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# ----------------------------
+# PHP / Composer (keep composer.lock if you use it)
+# ----------------------------
+vendor/
+.phpunit.result.cache
+phpunit.xml
+phpunit.xml.dist
+coverage/
+reports/
+
+# ----------------------------
+# WordPress / WP-CLI
+# ----------------------------
+debug.log
+.wp-cli/
+# Sometimes WP-CLI caches locally
+.wp-cli/cache/
+
+# ----------------------------
+# Build artifacts / distributions
+# ----------------------------
+dist/
+build/
+*.zip
+*.tar
+*.tar.gz
+*.map
+
+# Optional: if you export to a temporary directory before zipping
+export/
+
+# ----------------------------
+# Env / secrets
+# ----------------------------
+.env
+.env.*
+.env.local
+.envrc
+
+# ----------------------------
+# Caches / temp
+# ----------------------------
+.cache/
+tmp/
+temp/
+*.tmp
+
+# ----------------------------
+# Translations (keep .po/.pot in repo, ignore compiled .mo)
+# ----------------------------
+languages/*.mo
+
+# ----------------------------
+# Misc
+# ----------------------------
+*.log
+*.bak
+*.orig
+

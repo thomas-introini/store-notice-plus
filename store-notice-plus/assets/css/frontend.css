@@ -1,0 +1,99 @@
+/* Store Notice Plus – dual-buffer slide (left) */
+
+#snp-banner.snp-banner {
+  width: 100%;
+  background: var(--snp-bg, #111);
+  color: var(--snp-text, #fff);
+  font: 500 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  z-index: 9999;
+}
+
+#snp-banner .snp-inner {
+  position: relative;
+  display: flex;
+  justify-content: center;        /* center the message block */
+  align-items: center;
+  gap: .75rem;
+  padding: 10px 16px;
+  padding-right: 56px;            /* room for close button */
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+#snp-banner .snp-messages {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;               /* hide sliding layers */
+  transition: height .35s cubic-bezier(.22,.61,.36,1);
+  will-change: height;
+  min-height: 1em;
+}
+
+/* Two absolutely positioned layers that slide horizontally */
+#snp-banner .snp-layer {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  transform: translateX(100%);    /* default off-screen to the right */
+  transition: transform .75s cubic-bezier(.22,.61,.36,1);
+  will-change: transform;
+  pointer-events: none;           /* only active layer is clickable */
+  z-index: 1;
+  display: inline-block;
+}
+#snp-banner .snp-layer.is-active {
+  transform: translateX(0);       /* on screen */
+  pointer-events: auto;
+  z-index: 2;
+}
+#snp-banner .snp-layer.exit-to-left   { transform: translateX(-100%); }
+#snp-banner .snp-layer.enter-from-right { transform: translateX(100%); } /* semantic alias */
+
+/* Links */
+#snp-banner .snp-messages a {
+  color: var(--snp-link, #fff);
+  text-decoration: underline;
+}
+
+/* Close button pinned right */
+#snp-banner .snp-close {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--snp-close, #fff);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#snp-banner .snp-close:hover,
+#snp-banner .snp-close:focus { color: var(--snp-close-hover, rgba(255,255,255,.15)); }
+
+/* Sticky/top behavior */
+#snp-banner.snp--pos-top.snp--sticky { position: sticky; top: 0; }
+#snp-banner.snp--pos-bottom { position: static; }
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  #snp-banner { font-size: 13px; }
+  #snp-banner .snp-inner { padding: 8px 12px; padding-right: 48px; gap: .5rem; }
+}
+
+/* Respect admin bar when sticky at the top */
+body.admin-bar #snp-banner.snp--pos-top.snp--sticky { top: 32px; }
+@media (max-width: 782px) {
+  body.admin-bar #snp-banner.snp--pos-top.snp--sticky { top: 46px; }
+}
+
+/* Reduced motion: disable transitions */
+@media (prefers-reduced-motion: reduce) {
+  #snp-banner .snp-messages { transition: none; }
+  #snp-banner .snp-layer   { transition: none; transform: none !important; }
+}
