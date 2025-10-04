@@ -48,6 +48,7 @@ class SNP_Admin {
 			array( 'messages', 'textarea', __( 'Messages (one per line)', 'store-notice-plus' ) ),
 			array( 'interval', 'number', __( 'Rotation interval (seconds)', 'store-notice-plus' ) ),
 			array( 'dismiss_days', 'number', __( 'Dismiss duration (days)', 'store-notice-plus' ) ),
+			array( 'closable', 'checkbox', __( 'Closable (allow users to dismiss)', 'store-notice-plus' ) ),
 			array( 'render_hook', 'select', __( 'Insert banner at', 'store-notice-plus' ),
 			array(
 				'header'       => __( 'Inside header (via selector)', 'store-notice-plus' ),
@@ -89,6 +90,7 @@ class SNP_Admin {
 
 		$out['enabled']      = empty( $input['enabled'] ) ? 0 : 1;
 		$out['sticky']       = empty( $input['sticky'] ) ? 0 : 1;
+		$out['closable']     = empty( $input['closable'] ) ? 0 : 1;
 		$out['hide_wc_notice'] = empty( $input['hide_wc_notice'] ) ? 0 : 1;
 
 		// Interval: clamp 2..60 seconds.

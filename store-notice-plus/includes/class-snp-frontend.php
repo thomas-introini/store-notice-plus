@@ -45,8 +45,8 @@ class SNP_Frontend {
 		if ( empty( $lines ) ) {
 			return false;
 		}
-		// If user dismissed, cookie will exist until expiry.
-		if ( isset( $_COOKIE['snp_dismissed'] ) && '1' === $_COOKIE['snp_dismissed'] ) {
+		// If user dismissed and banner is closable, cookie will exist until expiry.
+		if ( ! empty( $opts['closable'] ) && isset( $_COOKIE['snp_dismissed'] ) && '1' === $_COOKIE['snp_dismissed'] ) {
 			return false;
 		}
 		return true;
@@ -94,6 +94,7 @@ class SNP_Frontend {
 		wp_localize_script( 'snp-frontend', 'SNP_DATA', array(
 			'interval'       => max( 2, min( 60, (int) $opts['interval'] ) ),
 			'dismissDays'    => max( 1, min( 365, (int) $opts['dismiss_days'] ) ),
+			'closable'       => (int) ! empty( $opts['closable'] ),
 			'position'       => $js_position,
 			'sticky'         => $js_sticky,
 			'renderHook'     => $render_hook,                   // 'header' | 'wp_body_open' | 'wp_footer'
@@ -155,7 +156,9 @@ class SNP_Frontend {
 					endforeach;
 					?>
 				</div>
-				<button type="button" class="snp-close" aria-label="<?php esc_attr_e( 'Close notice', 'store-notice-plus' ); ?>" title="<?php esc_attr_e( 'Close', 'store-notice-plus' ); ?>">×</button>
+				<?php if ( ! empty( $opts['closable'] ) ) : ?>
+					<button type="button" class="snp-close" aria-label="<?php esc_attr_e( 'Close notice', 'store-notice-plus' ); ?>" title="<?php esc_attr_e( 'Close', 'store-notice-plus' ); ?>">×</button>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php

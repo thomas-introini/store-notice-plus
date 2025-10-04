@@ -33,6 +33,7 @@ function snp_default_options() {
 		'messages'         => "Spedizione gratuita oltre 39€\nIscriviti alla newsletter per il 10% di sconto\nScopri i nostri abbonamenti <a href=\"/abbonamenti\">qui</a>",
 		'interval'         => 6,          // seconds
 		'dismiss_days'     => 7,          // cookie lifetime
+		'closable'         => 1,          // allow visitors to close banner
 		'render_hook'      => 'header', // 'header' | 'wp_body_open' | 'wp_footer'
 		'header_selector'  => 'header, .site-header, #site-header, #masthead, .main-header',
 		'sticky'           => 1,          // sticky on scroll

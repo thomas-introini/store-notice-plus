@@ -146,9 +146,11 @@
     document.cookie = cookie;
     try { localStorage.setItem('snp_dismissed', '1'); } catch (e) {}
   }
-  closeBtn.addEventListener('click', function () {
-    setDismissCookie(dismissDays);
-    banner.parentNode && banner.parentNode.removeChild(banner);
-    stopRotation();
-  });
+  if (SNP_DATA.closable && closeBtn) {
+    closeBtn.addEventListener('click', function () {
+      setDismissCookie(dismissDays);
+      banner.parentNode && banner.parentNode.removeChild(banner);
+      stopRotation();
+    });
+  }
 })();
