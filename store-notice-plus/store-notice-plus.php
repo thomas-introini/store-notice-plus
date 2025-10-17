@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Store Notice Plus
  * Description: A customizable, rotating, dismissible store notice banner with color controls. Safe layout (no header overlap) and mobile-friendly.
- * Version:     1.0.2
+ * Version:     1.1.0
  * Author:      Thomas Introini
  * License:     GPL-2.0-or-later
  * Text Domain: store-notice-plus
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SNP_VERSION', '1.0.0' );
+define( 'SNP_VERSION', '1.1.0' );
 define( 'SNP_FILE', __FILE__ );
 define( 'SNP_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SNP_URL', plugin_dir_url( __FILE__ ) );

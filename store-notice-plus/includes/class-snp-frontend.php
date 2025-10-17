@@ -34,10 +34,55 @@ class SNP_Frontend {
 	}
 
 	/**
+	 * Return true when the banner should be suppressed because the site
+	 * is not publicly visible (WP maintenance or WC Coming Soon).
+	 */
+	protected function is_site_unavailable() {
+		// 1) WordPress core maintenance (.maintenance present)
+		if ( function_exists( 'wp_is_maintenance_mode' ) && wp_is_maintenance_mode() ) {
+			return true; // site intentionally unavailable
+		}
+
+		// 2) WooCommerce Coming Soon (preferred, WC 9.1+)
+		//    Use the official helper from the DI container when available.
+		if ( function_exists( 'wc_get_container' ) && class_exists( '\Automattic\WooCommerce\Internal\ComingSoon\ComingSoonHelper' ) ) {
+			try {
+				$helper = wc_get_container()->get( \Automattic\WooCommerce\Internal\ComingSoon\ComingSoonHelper::class );
+				if ( method_exists( $helper, 'is_site_live' ) && ! $helper->is_site_live() ) {
+					return true; // site is NOT live => coming soon mode is active
+				}
+				// (Alternatively) if you prefer explicit:
+				// if ( method_exists( $helper, 'is_site_coming_soon' ) && $helper->is_site_coming_soon() ) return true;
+			} catch ( \Throwable $e ) {
+				// fall through to option heuristic
+			}
+		}
+
+		// 3) Fallback heuristic: check the option WC uses under the hood
+		//    (Helper implements: return 'yes' !== get_option('woocommerce_coming_soon'))
+		$raw = get_option( 'woocommerce_coming_soon', 'no' );
+		if ( in_array( $raw, array( 'yes', '1', 1, true ), true ) ) {
+			return true;
+		}
+
+		// 4) Allow overrides (e.g., hosts or coming-soon plugins)
+		if ( apply_filters( 'snp_hide_banner_for_coming_soon', false ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+	/**
 	 * True if banner should show (enabled + has messages + not dismissed via cookie).
 	 */
 	protected function should_show() {
 		$opts = wp_parse_args( (array) get_option( 'snp_options' ), snp_default_options() );
+		// Suppress when site is in maintenance/coming-soon.
+		if ( $this->is_site_unavailable() ) {
+			return false;
+		}
 		if ( empty( $opts['enabled'] ) ) {
 			return false;
 		}
