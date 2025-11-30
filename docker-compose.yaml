@@ -11,7 +11,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -22,7 +22,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8000:80"
+      - '8000:80'
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: ${DB_USER}
@@ -30,12 +30,12 @@ services:
       WORDPRESS_DB_NAME: ${DB_NAME}
       TZ: ${TZ}
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_DEBUG', true);
-        define('WP_DEBUG_LOG', true);
-        define('WP_DEBUG_DISPLAY', false);
-        define('SCRIPT_DEBUG', true);
-        define('WP_ENVIRONMENT_TYPE', 'development');
-        @ini_set('display_errors', 0);
+        if ( ! defined('WP_DEBUG') ) define('WP_DEBUG', true);
+        if ( ! defined('WP_DEBUG_LOG') ) define('WP_DEBUG_LOG', true);
+        if ( ! defined('WP_DEBUG_DISPLAY') ) define('WP_DEBUG_DISPLAY', false);
+        if ( ! defined('SCRIPT_DEBUG') ) define('SCRIPT_DEBUG', true);
+        if ( ! defined('WP_ENVIRONMENT_TYPE') ) define('WP_ENVIRONMENT_TYPE', 'development');
+        @ini_set('display_errors', '0');
     volumes:
       # WordPress core + uploads persist in a named volume
       - wp_data:/var/www/html
@@ -47,7 +47,7 @@ services:
     depends_on:
       - wordpress
       - db
-    user: "33:33" # www-data
+    user: '33:33' # www-data
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: ${DB_USER}
@@ -68,14 +68,13 @@ services:
       PMA_PASSWORD: ${DB_PASSWORD}
       TZ: ${TZ}
     ports:
-      - "8080:80"
+      - '8080:80'
 
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "8025:8025"
+      - '8025:8025'
 
 volumes:
   wp_data:
   db_data:
-
